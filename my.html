@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Impayés</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMD9qM/tWl2aItS9u0L5wddc4yxrL5H7B34H9" crossorigin="anonymous">
+</head>
+<body class="bg-gray-200 flex flex-col h-screen">
+    <header class="bg-white shadow p-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des Impayés</h1>
+
+        <!-- Notification Icon with Badge -->
+        <div class="relative">
+            <button class="focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3a2.032 2.032 0 01-.595 1.405L4 17h5m6 0a3 3 0 01-6 0" />
+                </svg>
+            </button>
+            <span id="notification-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+        </div>
+    </header>
+    <main class="container mx-auto flex-grow p-4">
+        <form id="impayeForm" class="mb-6 bg-white p-6 rounded-lg shadow-md">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="client_name" placeholder="Nom du client" class="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="number" id="montant" placeholder="Montant" class="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="date" id="date_creation" class="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="date" id="date_echeance" class="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="statut" class="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="en attente">En attente</option>
+                    <option value="payé">Payé</option>
+                    <option value="annulé">Annulé</option>
+                </select>
+                <button type="submit" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-200">Ajouter</button>
+            </div>
+        </form>
+        <div id="impayesList" class="space-y-4"></div>
+    </main>
+
+    <!-- Footer Menu -->
+    <footer class="bg-white shadow-t-lg text-gray-800 py-3 mt-auto">
+        <div class="container mx-auto flex justify-around">
+            <a href="index.html" class="flex flex-col items-center transition duration-200 transform hover:scale-105 hover:text-blue-600">
+                <i class="fas fa-home text-2xl mb-1"></i>
+                <span class="text-sm font-medium">Accueil</span>
+            </a>
+            <a href="impayés.html" class="flex flex-col items-center transition duration-200 transform hover:scale-105 hover:text-blue-600">
+                <i class="fas fa-file-invoice text-2xl mb-1"></i>
+                <span class="text-sm font-medium">Mes Impayés</span>
+            </a>
+            <a href="messages.html" class="flex flex-col items-center transition duration-200 transform hover:scale-105 hover:text-blue-600">
+                <i class="fas fa-chart-bar text-2xl mb-1"></i>
+                <span class="text-sm font-medium">Messages</span>
+            </a>
+            <a href="#" class="flex flex-col items-center transition duration-200 transform hover:scale-105 hover:text-blue-600">
+                <i class="fas fa-cog text-2xl mb-1"></i>
+                <span class="text-sm font-medium">Paramètres</span>
+            </a>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+
+        
+        document.getElementById('impayeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const client_name = document.getElementById('client_name').value;
+            const montant = document.getElementById('montant').value;
+            const date_creation = document.getElementById('date_creation').value;
+            const date_echeance = document.getElementById('date_echeance').value;
+            const statut = document.getElementById('statut').value;
+
+            const response = await fetch('http://localhost:3000/impayes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    client_name,
+                    montant,
+                    date_creation,
+                    date_echeance,
+                    statut,
+                }),
+            });
+
+            if (response.ok) {
+                alert('Impayé ajouté avec succès');
+                fetchImpayes(); // Rafraîchir la liste
+            } else {
+                alert('Erreur lors de l\'ajout de l\'impayé');
+            }
+        });
+
+      
+        function generatePDF(impaye) {
+    const { client_name, montant, statut, date_creation, date_echeance } = impaye;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // En-tête
+    doc.setFillColor(34, 85, 120); // Couleur de fond de l'en-tête
+    doc.rect(0, 0, 210, 30, 'F'); // Rectangle d'en-tête
+    doc.setFontSize(26);
+    doc.setTextColor(255, 255, 255); // Couleur blanche pour le texte de l'en-tête
+    doc.text('Facture Impayée', 15, 20);
+    
+    // Infos de l'entreprise
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+        doc.text('Votre Entreprise', 160, 15, { align: 'right' });
+        doc.text('Adresse de l\'entreprise', 160, 20, { align: 'right' });
+        doc.text('Téléphone: 0123456789', 160, 25, { align: 'right' });
+        doc.text('Email: contact@votreentreprise.com', 160, 30, { align: 'right' });
+
+    // Détails de la facture - Cadre du client
+    doc.setFillColor(245, 245, 245); // Fond pour les informations client
+    doc.rect(10, 40, 190, 80, 'F');
+    doc.setFontSize(14);
+    doc.setTextColor(34, 85, 120);
+    doc.text('Détails de la Facture', 15, 50);
+
+    // Informations du client
+    doc.setFontSize(12);
+    doc.setTextColor(60, 60, 60);
+    doc.text(`Client : ${client_name}`, 15, 65);
+    doc.text(`Montant : ${montant} €`, 15, 75);
+    doc.text(`Statut : ${statut}`, 15, 85);
+    doc.text(`Date de Création : ${new Date(date_creation).toLocaleDateString()}`, 15, 95);
+    doc.text(`Date d'Échéance : ${new Date(date_echeance).toLocaleDateString()}`, 15, 105);
+
+    // Ligne de séparation
+    doc.setLineWidth(0.5);
+    doc.line(10, 120, 200, 120);
+
+    // Remarques et message de remerciement
+    doc.setFontSize(12);
+    doc.setTextColor(60, 60, 60);
+    doc.text('Merci pour votre confiance !', 15, 130);
+    doc.text('Pour toute question, veuillez nous contacter.', 15, 140);
+
+    // Pied de page
+    doc.setFillColor(34, 85, 120);
+    doc.rect(0, 280, 210, 20, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Conditions de paiement : Paiement dû dans les 30 jours.', 15, 287);
+    doc.text('© 2024 Facture généré avec EQUIAPGRO pour Entreprise', 15, 293);
+
+    // Générer et sauvegarder le PDF
+    doc.save(`facture_${client_name}.pdf`);
+}
+
+    async function fetchImpayes() {
+        const response = await fetch('http://localhost:3000/impayes');
+        const impayes = await response.json();
+        const impayesList = document.getElementById('impayesList');
+        impayesList.innerHTML = ''; // Réinitialiser la liste
+
+        impayes.forEach(impaye => {
+            const impayeDiv = document.createElement('div');
+            impayeDiv.className = 'bg-white p-4 rounded-lg shadow hover:shadow-lg transition duration-200 cursor-pointer';
+            impayeDiv.innerHTML = `
+                <p><strong>Client:</strong> ${impaye.client_name}</p>
+                <p><strong>Montant:</strong> ${impaye.montant} €</p>
+                <p><strong>Statut:</strong> ${impaye.statut}</p>
+                <p><strong>Date de création:</strong> ${impaye.date_creation}</p>
+                <p><strong>Date d'échéance:</strong> ${impaye.date_echeance}</p>
+            `;
+
+            // Ajout d'un événement de clic pour générer le PDF
+            impayeDiv.addEventListener('click', () => {
+                generatePDF(impaye);
+            });
+
+            impayesList.appendChild(impayeDiv);
+        });
+    }
+
+
+        // Charger les impayés au démarrage
+        fetchImpayes();
+    </script>
+</body>
+</html>

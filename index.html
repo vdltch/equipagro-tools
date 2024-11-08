@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Impayés - Tableau de Bord</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow p-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">Tableau de Bord</h1>
+        <a href="myaccount.html" class="flex items-center space-x-2">
+            <i class="fas fa-user text-gray-800 text-2xl"></i>
+            <span class="text-gray-800 font-medium">Mon Compte</span>
+        </a>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="container mx-auto py-8">
+        <div>
+            <h1>Bienvenue, <span id="userName"></span>!</h1>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Latest Invoice Card -->
+            <a href="my.html">
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-200">
+                    <h2 class="text-xl font-semibold mb-4">Dernier Impayé</h2>
+                    <p id="lastClient" class="text-gray-700"><strong>Client :</strong> Inconnu</p>
+                    <p id="lastAmount" class="text-gray-700"><strong>Montant :</strong> N/A</p>
+                    <p id="lastDate" class="text-gray-700"><strong>Date :</strong> N/A</p>
+                    <p id="lastStatus" class="text-gray-700"><strong>Statut :</strong> N/A</p>
+                </div>
+            </a>
+            <!-- Last Message Card -->
+            <a href="messages.html">
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-200" style="height: 100%;">
+                    <h2 class="text-xl font-semibold mb-4">Dernier Message</h2>
+                    <p id="lastMessage" class="text-gray-700">Aucun nouveau message</p>
+                </div>
+            </a>
+            <!-- Pending Invoices Card -->
+            <a href="invoices.html">
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-200" style="height: 100%;">
+                    <h2 class="text-xl font-semibold mb-4">Factures en Attente</h2>
+                    <ul id="pendingInvoices" class="list-disc list-inside text-gray-700">
+                        <!-- Dynamically loaded pending invoices will appear here -->
+                        <li>Aucune facture en attente</li>
+                    </ul>
+                </div>
+            </a>
+        </div>
+    </main>
+
+    <!-- Fixed Bottom Menu -->
+    <footer class="bg-white text-black py-4 fixed bottom-0 w-full">
+        <div class="container mx-auto flex justify-around">
+            <a href="index.html" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-sm">Accueil</span>
+            </a>
+            <a href="impayés.html" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-file-invoice text-xl"></i>
+                <span class="text-sm">Mes Impayés</span>
+            </a>
+            <a href="messages.html" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-comments text-xl"></i>
+                <span class="text-sm">Messages</span>
+            </a>
+            <a href="#" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-cog text-xl"></i>
+                <span class="text-sm">Paramètres</span>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        async function checkUserSession() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                // Si pas de token, rediriger vers la page de connexion
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const response = await fetch('http://localhost:3000/user-session', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const userInfo = await response.json();
+                document.getElementById('userName').innerText = userInfo.nom;
+            } else {
+                // Si le token est invalide, rediriger vers la page de connexion
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadDashboardData() {
+            // Fetch data and populate dashboard elements
+            const invoiceResponse = await fetch('http://localhost:3000/last-impaye');
+            const lastImpaye = await invoiceResponse.ok ? await invoiceResponse.json() : null;
+            document.getElementById('lastClient').textContent = lastImpaye ? `Client : ${lastImpaye.client_name}` : "Aucun";
+            document.getElementById('lastAmount').textContent = lastImpaye ? `Montant : ${lastImpaye.montant} €` : "N/A";
+            document.getElementById('lastDate').textContent = lastImpaye ? `Date : ${lastImpaye.date_creation}` : "N/A";
+            document.getElementById('lastStatus').textContent = lastImpaye ? `Statut : ${lastImpaye.statut}` : "N/A";
+
+            const messageResponse = await fetch('http://localhost:3000/last-message');
+            const lastMessage = await messageResponse.ok ? await messageResponse.json() : { content: "Aucun nouveau message" };
+            document.getElementById('lastMessage').textContent = lastMessage.content;
+
+            const pendingResponse = await fetch('http://localhost:3000/impayes-wait');
+            const pendingInvoices = await pendingResponse.ok ? await pendingResponse.json() : [];
+            const pendingInvoicesList = document.getElementById('pendingInvoices');
+            pendingInvoicesList.innerHTML = '';
+            if (pendingInvoices.length > 0) {
+                pendingInvoices.forEach(invoice => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${invoice.client_name} - ${invoice.montant} €`;
+                    pendingInvoicesList.appendChild(listItem);
+                });
+            } else {
+                pendingInvoicesList.innerHTML = '<li>Aucune facture en attente</li>';
+            }
+        }
+
+        window.onload = async () => {
+            await checkUserSession(); // Vérifier l'authentification
+            loadDashboardData(); // Charger les données du tableau de bord
+        };
+       
+    </script>
+</body>
+</html>

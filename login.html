@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        #popupContent {
+            animation: popupAnim 0.5s forwards;
+        }
+    
+        @keyframes popupAnim {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-6">Connexion</h2>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email :</label>
+                <input type="email" id="email" name="email" required
+                       class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe :</label>
+                <input type="password" id="password" name="password" required
+                       class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button type="submit"
+                    class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-md transition duration-200">
+                Se connecter
+            </button>
+        </form>
+
+        <p id="message" class="text-center text-red-500 mt-4"></p>
+
+        <button id="logoutBtn" style="display: none;"
+                class="w-full mt-6 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md transition duration-200">
+            Se déconnecter
+        </button>
+        <!-- Pop-up de connexion réussie -->
+<div id="successPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0" id="popupContent">
+        <h2 class="text-lg font-bold mb-4">Connexion réussie !</h2>
+        <p class="text-gray-700">Redirection en cours...</p>
+    </div>
+</div>
+    </div>
+
+    <script src="App/login.js"></script>
+</body>
+</html>

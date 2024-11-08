@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie Instantanée</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <input type="text" id="messageInput" placeholder="Tapez votre message...">
+        <button id="sendButton">Envoyer</button>
+    </div>
+
+    <script>
+        const socket = io.connect('http://localhost:3000');
+        const userId = 1; // Remplacer par l'ID utilisateur actuel
+        const receiverId = 2; // Remplacer par l'ID de l'entreprise
+
+        // Recevoir les messages
+        socket.on('receiveMessage', (message) => {
+            displayMessage(message);
+        });
+
+        // Envoyer un message
+        document.getElementById('sendButton').addEventListener('click', () => {
+            const messageContent = document.getElementById('messageInput').value;
+            const messageData = { sender_id: userId, receiver_id: receiverId, content: messageContent };
+
+            socket.emit('sendMessage', messageData);
+            displayMessage(messageData);
+            document.getElementById('messageInput').value = '';
+        });
+
+        // Afficher le message
+        function displayMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message.content;
+            document.getElementById('messages').appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>

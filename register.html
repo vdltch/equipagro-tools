@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-200 flex justify-center items-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96">
+        <h2 class="text-2xl font-bold mb-6">Inscription</h2>
+        <form id="registerForm">
+            <input type="text" id="name" placeholder="Nom complet" class="border p-2 rounded w-full mb-4" required>
+            <input type="email" id="email" placeholder="Email" class="border p-2 rounded w-full mb-4" required>
+            <input type="password" id="password" placeholder="Mot de passe" class="border p-2 rounded w-full mb-4" required>
+            <button type="submit" class="bg-green-500 text-white p-2 rounded w-full hover:bg-green-600 transition duration-200">S'inscrire</button>
+        </form>
+        <p id="errorMessage" class="text-red-500 mt-4 hidden"></p>
+        <p class="mt-6 text-center text-gray-600">
+            Vous avez déjà un compte ?
+            <a href="login.html" class="text-blue-500 hover:text-blue-700 font-semibold">Connectez-vous ici</a>
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('http://localhost:3000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password }),
+            });
+
+            if (response.ok) {
+                alert('Inscription réussie. Vous pouvez maintenant vous connecter.');
+                window.location.href = 'login.html';
+            } else {
+                const error = await response.json();
+                document.getElementById('errorMessage').textContent = error.message;
+                document.getElementById('errorMessage').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

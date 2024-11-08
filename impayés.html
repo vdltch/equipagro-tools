@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Ajouter un Impayé</title>
+</head>
+<body class="bg-gray-100 flex flex-col min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow p-4 flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">Gestion des Impayés</h1>
+    
+        <!-- Notification Icon with Badge -->
+        <div class="relative">
+            <button id="notificationButton" class="focus:outline-none">
+                <!-- Bell Icon (SVG) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6 6 0 10-12 0v3a2.032 2.032 0 01-.595 1.405L4 17h5m6 0a3 3 0 01-6 0" />
+                </svg>
+            </button>
+    
+            <!-- Notification Count Bubble -->
+            <span id="notification-count" class="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                3
+            </span>
+
+            <div id="notificationPopup" class="hidden absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 z-10">
+                <h2 class="text-lg font-bold mb-2">Notifications</h2>
+                <ul>
+                    <li class="border-b py-2 hover:bg-gray-100 cursor-pointer">Notification 1</li>
+                    <li class="border-b py-2 hover:bg-gray-100 cursor-pointer">Notification 2</li>
+                    <li class="border-b py-2 hover:bg-gray-100 cursor-pointer">Notification 3</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow">
+        <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Ajouter un Impayé</h2>
+        <form id="impayeForm" class="bg-white shadow-md rounded p-6 mb-6 relative">
+            <label for="token" class="block text-gray-700 font-semibold">Nom ou token de l'entreprise</label>
+            <input type="text" id="token" class="border p-2 w-full rounded" placeholder="Entrer le nom de l'entreprise" autocomplete="off" required>
+
+            <!-- Custom Dropdown for Suggestions -->
+            <ul id="suggestions" class="absolute left-0 right-0 mt-2 bg-white border border-gray-300 rounded shadow-md hidden max-h-48 overflow-y-auto">
+                <!-- Suggestions will be populated here -->
+            </ul>
+
+            <button type="button" id="fetchEntreprise" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full mt-4">
+                Récupérer l'Entreprise
+            </button>
+        </form>
+
+        <!-- Company Info and Create Invoice Form -->
+        <div id="entrepriseInfo" class="mt-6 p-6 bg-white shadow-md rounded hidden">
+            <h3 class="text-xl font-semibold mb-4" id="entrepriseNom"></h3>
+            <div class="mb-4">
+                <p><strong>Adresse:</strong> <span id="entrepriseAdresse"></span></p>
+                <p><strong>Téléphone:</strong> <span id="entrepriseTelephone"></span></p>
+                <p><strong>Email:</strong> <span id="entrepriseEmail"></span></p>
+                <p><strong>Site Web:</strong> <a href="#" id="entrepriseSiteWeb" target="_blank" class="text-blue-500 hover:underline"></a></p>
+                <p><strong>Description:</strong> <span id="entrepriseDescription"></span></p>
+            </div>
+
+            <!-- Create Impaye Form -->
+            <form id="createImpayéForm" class="mt-4">
+                <div class="mb-4">
+                    <label for="montant" class="block text-gray-700 font-semibold">Montant de l'impayé</label>
+                    <input type="number" id="montant" class="border p-2 w-full rounded" placeholder="Entrer le montant" required>
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="block text-gray-700 font-semibold">Description de l'impayé</label>
+                    <textarea id="description" class="border p-2 w-full rounded" placeholder="Description" required></textarea>
+                </div>
+                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded w-full">
+                    Créer un Impayé
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white text-black py-4">
+        <div class="container mx-auto flex justify-around">
+            <a href="index.html" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-sm">Accueil</span>
+            </a>
+            <a href="impayés.html" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-file-invoice text-xl"></i>
+                <span class="text-sm">Mes Impayés</span>
+            </a>
+            <a href="messages.html" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-comments text-xl"></i>
+                <span class="text-sm">Messages</span>
+            </a>
+            <a href="#" class="flex flex-col items-center hover:text-blue-400">
+                <i class="fas fa-cog text-xl"></i>
+                <span class="text-sm">Paramètres</span>
+            </a>
+        </div>
+    </footer>
+
+    <script src="App/impayes.js"></script>
+    <script>
+        const tokenInput = document.getElementById('token');
+        const suggestions = document.getElementById('suggestions');
+
+        // Fonction pour afficher et remplir les suggestions
+        tokenInput.addEventListener('input', async () => {
+    const query = tokenInput.value;
+    if (query.length > 1) {
+        try {
+            const response = await fetch(`http://localhost:3000/search-enterprises?name=${encodeURIComponent(query)}`);
+            const enterprises = await response.json();
+
+            // Vider et afficher les suggestions
+            suggestions.innerHTML = '';
+            enterprises.forEach(enterprise => {
+                const item = document.createElement('li');
+                item.classList.add('px-4', 'py-2', 'hover:bg-gray-100', 'cursor-pointer');
+                item.textContent = enterprise.nom; // Affiche le nom de l'entreprise
+                item.addEventListener('click', () => {
+                    tokenInput.value = enterprise.nom; // Remplir l'input avec le nom
+                    suggestions.classList.add('hidden');
+                });
+                suggestions.appendChild(item);
+            });
+
+            suggestions.classList.remove('hidden');
+        } catch (error) {
+            console.error("Erreur lors de la récupération des suggestions", error);
+        }
+    } else {
+        suggestions.classList.add('hidden');
+    }
+});
+        // Fermer les suggestions si l'utilisateur clique en dehors
+        document.addEventListener('click', (e) => {
+            if (!tokenInput.contains(e.target) && !suggestions.contains(e.target)) {
+                suggestions.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

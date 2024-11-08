@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-200 flex justify-center items-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96">
+        <h2 class="text-2xl font-bold mb-6">Mon Compte</h2>
+        <p><strong>Nom :</strong> <span id="username"></span></p>
+        <p><strong>Email :</strong> <span id="useremail"></span></p>
+        <p><strong>Date de création :</strong> <span id="createdDate"></span></p>
+        <button onclick="logout()" class="bg-red-500 text-white p-2 rounded w-full hover:bg-red-600 transition duration-200 mt-4">Se déconnecter</button>
+    </div>
+    
+    <script>
+        // Fonction pour récupérer les données de session utilisateur et les afficher
+        async function fetchUserData() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Vous devez être connecté pour accéder à cette page.");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const response = await fetch('http://localhost:3000/user-session', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}` // Ajouter le token dans les en-têtes
+                }
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+                document.getElementById('username').textContent = user.nom;
+                document.getElementById('useremail').textContent = user.email;
+                document.getElementById('createdDate').textContent = user.created_at;
+            } else {
+                alert("Vous devez être connecté pour accéder à cette page.");
+                localStorage.removeItem('token'); // Supprimer le token si la réponse n'est pas OK
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Fonction de déconnexion
+        function logout() {
+            localStorage.removeItem('token'); // Supprimer le token lors de la déconnexion
+            fetch('http://localhost:3000/logout', { method: 'POST' }) // Effectuer la déconnexion côté serveur
+                .then(() => window.location.href = 'login.html');
+        }
+
+        // Appeler la fonction pour récupérer les données utilisateur au chargement de la page
+        fetchUserData();
+    </script>
+</body>
+</html>
