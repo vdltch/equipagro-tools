@@ -71,8 +71,8 @@
             const date_creation = document.getElementById('date_creation').value;
             const date_echeance = document.getElementById('date_echeance').value;
             const statut = document.getElementById('statut').value;
-
-            const response = await fetch('http://localhost:3000/impayes', {
+            const baseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+            const response = await fetch(`${baseUrl}/impayes`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -95,66 +95,68 @@
         });
 
       
-        function generatePDF(impaye) {
-    const { client_name, montant, statut, date_creation, date_echeance } = impaye;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    function generatePDF(impaye) {
+        const { client_name, montant, statut, date_creation, date_echeance } = impaye;
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
 
-    // En-tête
-    doc.setFillColor(34, 85, 120); // Couleur de fond de l'en-tête
-    doc.rect(0, 0, 210, 30, 'F'); // Rectangle d'en-tête
-    doc.setFontSize(26);
-    doc.setTextColor(255, 255, 255); // Couleur blanche pour le texte de l'en-tête
-    doc.text('Facture Impayée', 15, 20);
-    
-    // Infos de l'entreprise
-    doc.setFontSize(10);
-    doc.setTextColor(255, 255, 255);
-        doc.text('Votre Entreprise', 160, 15, { align: 'right' });
-        doc.text('Adresse de l\'entreprise', 160, 20, { align: 'right' });
+        // En-tête
+        doc.setFillColor(34, 85, 120); // Couleur de fond de l'en-tête
+        doc.rect(0, 0, 210, 30, 'F'); // Rectangle d'en-tête
+        doc.setFontSize(26);
+        doc.setTextColor(255, 255, 255); // Couleur blanche pour le texte de l'en-tête
+        doc.text('Facture Impayée', 15, 20);
+        
+        // Infos de l'entreprise
+        doc.setFontSize(10);
+        doc.setTextColor(255, 255, 255);
+        doc.text('EPG', 160, 15, { align: 'right' });
+        doc.text('1 rue John Doe', 160, 20, { align: 'right' });
         doc.text('Téléphone: 0123456789', 160, 25, { align: 'right' });
-        doc.text('Email: contact@votreentreprise.com', 160, 30, { align: 'right' });
+        doc.text('Email: contact@epg.com', 160, 30, { align: 'right' });
 
-    // Détails de la facture - Cadre du client
-    doc.setFillColor(245, 245, 245); // Fond pour les informations client
-    doc.rect(10, 40, 190, 80, 'F');
-    doc.setFontSize(14);
-    doc.setTextColor(34, 85, 120);
-    doc.text('Détails de la Facture', 15, 50);
+        // Détails de la facture - Cadre du client
+        doc.setFillColor(245, 245, 245); // Fond pour les informations client
+        doc.rect(10, 40, 190, 80, 'F');
+        doc.setFontSize(14);
+        doc.setTextColor(34, 85, 120);
+        doc.text('Détails de la Facture', 15, 50);
 
-    // Informations du client
-    doc.setFontSize(12);
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Client : ${client_name}`, 15, 65);
-    doc.text(`Montant : ${montant} €`, 15, 75);
-    doc.text(`Statut : ${statut}`, 15, 85);
-    doc.text(`Date de Création : ${new Date(date_creation).toLocaleDateString()}`, 15, 95);
-    doc.text(`Date d'Échéance : ${new Date(date_echeance).toLocaleDateString()}`, 15, 105);
+        // Informations du client
+        doc.setFontSize(12);
+        doc.setTextColor(60, 60, 60);
+        doc.text(`Client : ${client_name}`, 15, 65);
+        doc.text(`Montant : ${montant} €`, 15, 75);
+        doc.text(`Statut : ${statut}`, 15, 85);
+        doc.text(`Date de Création : ${new Date(date_creation).toLocaleDateString()}`, 15, 95);
+        doc.text(`Date d'Échéance : ${new Date(date_echeance).toLocaleDateString()}`, 15, 105);
 
-    // Ligne de séparation
-    doc.setLineWidth(0.5);
-    doc.line(10, 120, 200, 120);
+        // Ligne de séparation
+        doc.setLineWidth(0.5);
+        doc.line(10, 120, 200, 120);
 
-    // Remarques et message de remerciement
-    doc.setFontSize(12);
-    doc.setTextColor(60, 60, 60);
-    doc.text('Merci pour votre confiance !', 15, 130);
-    doc.text('Pour toute question, veuillez nous contacter.', 15, 140);
+        // Remarques et message de remerciement
+        doc.setFontSize(12);
+        doc.setTextColor(60, 60, 60);
+        doc.text('Merci pour votre confiance !', 15, 130);
+        doc.text('Pour toute question, veuillez nous contacter.', 15, 140);
 
-    // Pied de page
-    doc.setFillColor(34, 85, 120);
-    doc.rect(0, 280, 210, 20, 'F');
-    doc.setFontSize(10);
-    doc.setTextColor(255, 255, 255);
-    doc.text('Conditions de paiement : Paiement dû dans les 30 jours.', 15, 287);
-    doc.text('© 2024 Facture généré avec EQUIAPGRO pour Entreprise', 15, 293);
+        // Pied de page
+        doc.setFillColor(34, 85, 120);
+        doc.rect(0, 280, 210, 20, 'F');
+        doc.setFontSize(10);
+        doc.setTextColor(255, 255, 255);
+        doc.text('Conditions de paiement : Paiement dû dans les 30 jours.', 15, 287);
+        doc.text('© 2024 Facture généré avec EQUIAPGRO pour Entreprise', 15, 293);
 
-    // Générer et sauvegarder le PDF
-    doc.save(`facture_${client_name}.pdf`);
-}
+        // Générer et sauvegarder le PDF
+        doc.save(`facture_${client_name}.pdf`);
+    }
 
     async function fetchImpayes() {
-        const response = await fetch('http://localhost:3000/impayes');
+        const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+
+        const response = await fetch(`${apiBaseUrl}/impayes`);
         const impayes = await response.json();
         const impayesList = document.getElementById('impayesList');
         impayesList.innerHTML = ''; // Réinitialiser la liste

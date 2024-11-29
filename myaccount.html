@@ -24,8 +24,9 @@
                 window.location.href = 'login.html';
                 return;
             }
+            const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
-            const response = await fetch('http://localhost:3000/user-session', {
+            const response = await fetch(`${apiBaseUrl}/user-session`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}` // Ajouter le token dans les en-têtes
@@ -47,7 +48,9 @@
         // Fonction de déconnexion
         function logout() {
             localStorage.removeItem('token'); // Supprimer le token lors de la déconnexion
-            fetch('http://localhost:3000/logout', { method: 'POST' }) // Effectuer la déconnexion côté serveur
+            const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+
+            fetch(`${apiBaseUrl}/logout`, { method: 'POST' }) // Effectuer la déconnexion côté serveur
                 .then(() => window.location.href = 'login.html');
         }
 

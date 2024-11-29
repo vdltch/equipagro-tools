@@ -1,10 +1,11 @@
 document.getElementById('fetchEntreprise').onclick = async function() {
     const input = document.getElementById('token').value;
 const isToken = /^\d+$/.test(input);  // Vérifie si l'input est numérique (token)
+const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
     const url = isToken
-        ? `http://localhost:3000/entreprises/${input}` // Recherche par token
-        : `http://localhost:3000/search-enterprises?name=${encodeURIComponent(input)}`; // Recherche par nom
+        ? `${apiBaseUrl}/entreprises/${input}` // Recherche par token
+        : `${apiBaseUrl}/search-enterprises?name=${encodeURIComponent(input)}`; // Recherche par nom
     
     try {
         const response = await fetch(url);
@@ -49,9 +50,10 @@ document.getElementById('createImpayéForm').onsubmit = async function(event) {
     const token = document.getElementById('token').value;
     const montant = document.getElementById('montant').value;
     const description = document.getElementById('description').value;
+    const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
     try {
-        const response = await fetch('http://localhost:3000/impaye', {
+        const response = await fetch(`${apiBaseUrl}/impaye`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -14,7 +14,8 @@
     </div>
 
     <script>
-        const socket = io.connect('http://localhost:3000');
+        const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+        const socket = io.connect(`${apiBaseUrl}`);
         const userId = 1; // Remplacer par l'ID utilisateur actuel
         const receiverId = 2; // Remplacer par l'ID de l'entreprise
 

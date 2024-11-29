@@ -28,8 +28,9 @@
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
-            const response = await fetch('http://localhost:3000/register', {
+            const response = await fetch(`${apiBaseUrl}/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

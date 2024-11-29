@@ -113,7 +113,8 @@
 
         // Charger la liste de contacts
         const loadContactList = async () => {
-            const response = await fetch(`http://localhost:3000/users`);
+            const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+            const response = await fetch(`${apiBaseUrl}/users`);
             const users = await response.json();
             contactList.innerHTML = ''; // Efface la liste actuelle
 
@@ -134,7 +135,9 @@
 
         // Chargement des infos utilisateur et liste des contacts
         const fetchUserData = async () => {
-            const response = await fetch('http://localhost:3000/user-session', {
+            const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+
+            const response = await fetch(`${apiBaseUrl}/user-session`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -151,7 +154,7 @@
         };
 
         const loadUsers = async () => {
-            const response = await fetch(`http://localhost:3000/users`);
+            const response = await fetch(`${baseUrl}/users`);
             const users = await response.json();
             userList.innerHTML = '';
 
@@ -171,7 +174,7 @@
         };
 
         const loadMessages = async (user1Id, user2Id) => {
-    const response = await fetch(`http://localhost:3000/messages?user1=${user1Id}&user2=${user2Id}`);
+    const response = await fetch(`${baseUrl}/messages?user1=${user1Id}&user2=${user2Id}`);
     const messages = await response.json();
     messageList.innerHTML = '';
 
@@ -186,7 +189,7 @@
         sendButton.onclick = async () => {
             const message = messageInput.value;
             if (message) {
-                const response = await fetch('http://localhost:3000/send-message', {
+                const response = await fetch('${baseUrl}/send-message', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

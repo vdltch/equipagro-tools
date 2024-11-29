@@ -5,8 +5,9 @@ document.getElementById('impayeForm').addEventListener('submit', async (e) => {
     const date_creation = document.getElementById('date_creation').value;
     const date_echeance = document.getElementById('date_echeance').value;
     const statut = document.getElementById('statut').value;
+    const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
-    const response = await fetch('http://localhost:3000/impayes', {
+    const response = await fetch(`${apiBaseUrl}/impayes`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -29,7 +30,7 @@ document.getElementById('impayeForm').addEventListener('submit', async (e) => {
 });
 
 async function fetchImpayes() {
-    const response = await fetch('http://localhost:3000/impayes');
+    const response = await fetch(`${apiBaseUrl}/impayes`);
     const impayes = await response.json();
     const impayesList = document.getElementById('impayesList');
     impayesList.innerHTML = ''; // Réinitialiser la liste

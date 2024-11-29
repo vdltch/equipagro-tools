@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
+
 const app = express();
 const crypto = require('crypto'); // Pour générer le token
 const port = 3000;
@@ -11,19 +12,22 @@ const { Server } = require('socket.io');
 const server = http.createServer(app);
 const session = require('express-session');
 const jwt = require('jsonwebtoken');
+const apiUrl = `${process.env.API_URL}:${process.env.API_PORT}`;
+const baseUrl = `${process.env.API_URL}}`;
 const io = new Server(server, {
   cors: {
-      origin: 'http://localhost:8888', // Port du client
+    origin: 'http://epg-tools.local', // Autorisez cette origine
       methods: ['GET', 'POST']
   }
 });
+require('dotenv').config();
 
 app.use(bodyParser.json());
 
 // Fix les problèmes de CORS
 app.use(cors({
-    origin: 'http://localhost:8888',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  origin: 'http://epg-tools.local', // Autorisez cette origine
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
 }));
 
@@ -36,11 +40,11 @@ app.use(session({
 const secretKey = 'votre_clé_secrète';
 
 const db = mysql.createConnection({
-    host: 'localhost', 
+    host: '127.0.0.1', 
     user: 'root', 
     password: 'root',
     database: 'equipagro',
-    port: 8889
+    port: 3306
 });
 
 db.connect((err) => {
@@ -340,7 +344,6 @@ app.post('/login', (req, res) => {
                   email: results[0].email,
                   name: results[0].name
               };
-              // Inclure l'ID de l'utilisateur dans le token
               const token = jwt.sign({ userId: results[0].id }, secretKey, { expiresIn: '1h' });
 
               // Répondre avec le token

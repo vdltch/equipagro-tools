@@ -113,7 +113,7 @@
     const query = tokenInput.value;
     if (query.length > 1) {
         try {
-            const response = await fetch(`http://localhost:3000/search-enterprises?name=${encodeURIComponent(query)}`);
+            const response = await fetch(`${baseUrl}/search-enterprises?name=${encodeURIComponent(query)}`);
             const enterprises = await response.json();
 
             // Vider et afficher les suggestions

@@ -2,11 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const logoutBtn = document.getElementById('logoutBtn');
     const message = document.getElementById('message');
+    const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
     // Vérifier la session utilisateur au chargement de la page
     const token = localStorage.getItem('token');
     if (token) {
-        fetch('http://localhost:3000/user-session', {
+        fetch(`${apiBaseUrl}/user-session`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        fetch('http://localhost:3000/login', {
+        fetch(`${apiBaseUrl}/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -66,7 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Gestion de la déconnexion
     logoutBtn.addEventListener('click', () => {
-        fetch('http://localhost:3000/logout', {
+        const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+
+        fetch(`${apiBaseUrl}/logout`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
