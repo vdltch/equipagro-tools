@@ -42,13 +42,17 @@
                 class="w-full mt-6 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md transition duration-200">
             Se déconnecter
         </button>
+        <p class="mt-6 text-center text-gray-600">
+            Vous n'avez pas de compte ?
+            <a href="register.html" class="text-blue-500 hover:text-blue-700 font-semibold">Créez en un dès maintenant</a>
+        </p>
         <!-- Pop-up de connexion réussie -->
-<div id="successPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0" id="popupContent">
-        <h2 class="text-lg font-bold mb-4">Connexion réussie !</h2>
-        <p class="text-gray-700">Redirection en cours...</p>
-    </div>
-</div>
+        <div id="successPopup" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="bg-white p-6 rounded-lg shadow-lg transform transition-transform scale-0" id="popupContent">
+                <h2 class="text-lg font-bold mb-4">Connexion réussie !</h2>
+                <p class="text-gray-700">Redirection en cours...</p>
+            </div>
+        </div>
     </div>
 
     <script src="App/login.js"></script>
