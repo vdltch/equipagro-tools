@@ -26,7 +26,7 @@
             }
             const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
-            const response = await fetch(`${apiBaseUrl}/user-session`, {
+            const response = await fetch(`/user-session`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}` // Ajouter le token dans les en-têtes
@@ -50,7 +50,7 @@
             localStorage.removeItem('token'); // Supprimer le token lors de la déconnexion
             const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
-            fetch(`${apiBaseUrl}/logout`, { method: 'POST' }) // Effectuer la déconnexion côté serveur
+            fetch(`/logout`, { method: 'POST' }) // Effectuer la déconnexion côté serveur
                 .then(() => window.location.href = 'login.html');
         }
 

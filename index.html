@@ -59,7 +59,7 @@
                 <i class="fas fa-home text-xl"></i>
                 <span class="text-sm">Accueil</span>
             </a>
-            <a href="impayés.html" class="flex flex-col items-center hover:text-blue-400">
+            <a href="impayes.html" class="flex flex-col items-center hover:text-blue-400">
                 <i class="fas fa-file-invoice text-xl"></i>
                 <span class="text-sm">Mes Impayés</span>
             </a>
@@ -84,7 +84,7 @@
                 return;
             }
             const baseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
-            const apiUrl = `${baseUrl}/user-session`;
+            const apiUrl = `/user-session`;
             const response = await fetch(apiUrl, {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -102,18 +102,18 @@
 
         async function loadDashboardData() {
             const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
-            const invoiceResponse = await fetch(`${apiBaseUrl}/last-impaye`);
+            const invoiceResponse = await fetch(`/last-impaye`);
             const lastImpaye = await invoiceResponse.ok ? await invoiceResponse.json() : null;
             document.getElementById('lastClient').textContent = lastImpaye ? `Client : ${lastImpaye.client_name}` : "Aucun";
             document.getElementById('lastAmount').textContent = lastImpaye ? `Montant : ${lastImpaye.montant} €` : "N/A";
             document.getElementById('lastDate').textContent = lastImpaye ? `Date : ${lastImpaye.date_creation}` : "N/A";
             document.getElementById('lastStatus').textContent = lastImpaye ? `Statut : ${lastImpaye.statut}` : "N/A";
 
-            const messageResponse = await fetch(`${apiBaseUrl}/last-message`);
+            const messageResponse = await fetch(`/last-message`);
             const lastMessage = await messageResponse.ok ? await messageResponse.json() : { content: "Aucun nouveau message" };
             document.getElementById('lastMessage').textContent = lastMessage.content;
 
-            const pendingResponse = await fetch(`${apiBaseUrl}/impayes-wait`);
+            const pendingResponse = await fetch(`/impayes-wait`);
             const pendingInvoices = await pendingResponse.ok ? await pendingResponse.json() : [];
             const pendingInvoicesList = document.getElementById('pendingInvoices');
             pendingInvoicesList.innerHTML = '';

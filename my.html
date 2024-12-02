@@ -46,7 +46,7 @@
                 <i class="fas fa-home text-2xl mb-1"></i>
                 <span class="text-sm font-medium">Accueil</span>
             </a>
-            <a href="impayés.html" class="flex flex-col items-center transition duration-200 transform hover:scale-105 hover:text-blue-600">
+            <a href="impayes.html" class="flex flex-col items-center transition duration-200 transform hover:scale-105 hover:text-blue-600">
                 <i class="fas fa-file-invoice text-2xl mb-1"></i>
                 <span class="text-sm font-medium">Mes Impayés</span>
             </a>
@@ -72,7 +72,7 @@
             const date_echeance = document.getElementById('date_echeance').value;
             const statut = document.getElementById('statut').value;
             const baseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
-            const response = await fetch(`${baseUrl}/impayes`, {
+            const response = await fetch(`/impayes`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -156,7 +156,7 @@
     async function fetchImpayes() {
         const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
-        const response = await fetch(`${apiBaseUrl}/impayes`);
+        const response = await fetch(`/impayes`);
         const impayes = await response.json();
         const impayesList = document.getElementById('impayesList');
         impayesList.innerHTML = ''; // Réinitialiser la liste

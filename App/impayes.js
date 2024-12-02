@@ -4,8 +4,8 @@ const isToken = /^\d+$/.test(input);  // Vérifie si l'input est numérique (tok
 const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
     const url = isToken
-        ? `${apiBaseUrl}/entreprises/${input}` // Recherche par token
-        : `${apiBaseUrl}/search-enterprises?name=${encodeURIComponent(input)}`; // Recherche par nom
+        ? `/entreprises/${input}` // Recherche par token
+        : `/search-enterprises?name=${encodeURIComponent(input)}`; // Recherche par nom
     
     try {
         const response = await fetch(url);
@@ -53,7 +53,7 @@ document.getElementById('createImpayéForm').onsubmit = async function(event) {
     const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
     try {
-        const response = await fetch(`${apiBaseUrl}/impaye`, {
+        const response = await fetch(`/impaye`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

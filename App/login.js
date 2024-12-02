@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Vérifier la session utilisateur au chargement de la page
     const token = localStorage.getItem('token');
     if (token) {
-        fetch(`${apiBaseUrl}/user-session`, {
+        fetch(`/user-session`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
 
-        fetch(`${apiBaseUrl}/login`, {
+        fetch(`/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutBtn.addEventListener('click', () => {
         const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
 
-        fetch(`${apiBaseUrl}/logout`, {
+        fetch(`/logout`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
