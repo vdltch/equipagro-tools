@@ -11,25 +11,19 @@ const bodyParser = require('body-parser');
 const { Server } = require('socket.io');
 const server = http.createServer(app);
 const session = require('express-session');
+app.use(express.static('/var/www/html/'));
 const jwt = require('jsonwebtoken');
 const apiUrl = `${process.env.API_URL}:${process.env.API_PORT}`;
 const baseUrl = `${process.env.API_URL}}`;
 const io = new Server(server, {
   cors: {
-    origin: 'http://epg-tools.local', // Autorisez cette origine
+      origin: ['https://epg.vicode.agency', 'https://api.epg.vicode.agency'], // Domaines autorisés
       methods: ['GET', 'POST']
   }
 });
 require('dotenv').config();
 
 app.use(bodyParser.json());
-
-// Fix les problèmes de CORS
-app.use(cors({
-  origin: 'http://epg-tools.local', // Autorisez cette origine
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-}));
 
 app.use(session({
   secret: crypto.randomBytes(32).toString('hex'), // secret généré pour la sécurité
@@ -40,9 +34,9 @@ app.use(session({
 const secretKey = 'votre_clé_secrète';
 
 const db = mysql.createConnection({
-    host: '127.0.0.1', 
-    user: 'root', 
-    password: 'root',
+    host: '82.67.36.31', 
+    user: 'epg', 
+    password: 'lolo2004',
     database: 'equipagro',
     port: 3306
 });
@@ -55,6 +49,14 @@ db.connect((err) => {
     console.log('Connecté à la base de données MySQL');
 });
 
+const corsOptions = {
+  origin: 'https://epg.vicode.agency', // autoriser uniquement cette origine
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // autoriser certaines méthodes
+  allowedHeaders: ['Content-Type', 'Authorization'], // autoriser certains headers
+  credentials: true, // permet d'envoyer des cookies
+};
+
+app.use(cors(corsOptions));
 
 // ROUTES
 

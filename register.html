@@ -28,9 +28,9 @@
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const apiBaseUrl = `${window.location.protocol}//${window.location.hostname}:3000`;
+            const apiBaseUrl = `${window.location.protocol}//api.${window.location.hostname}`;
 
-            const response = await fetch(`${apiBaseUrl}/register`, {
+            const response = await fetch(`/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
